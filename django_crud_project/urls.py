@@ -23,6 +23,6 @@ from django.shortcuts import redirect
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', include('crudapp.urls')),
-    path('/about')
+    #path('/about')
     #path('', lambda request: redirect('item_list')),  # Redirect root to item_list
 ]
