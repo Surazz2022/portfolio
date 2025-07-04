@@ -310,8 +310,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
-            aspect-ratio: var(--golden-ratio);
+            height: auto;
+            min-height: 0;
+            width: 100%;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         .skill-card::before {
@@ -551,7 +556,11 @@
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                         box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            aspect-ratio: 16/9;
+            height: auto;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .blog-card:hover {
@@ -561,9 +570,11 @@
 
         .blog-image {
             width: 100%;
-            height: 200px;
+            height: auto;
+            max-height: 250px;
             object-fit: cover;
             border-bottom: 2px solid var(--primary);
+            display: block;
         }
 
         .blog-content {
