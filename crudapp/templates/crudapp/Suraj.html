@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Suraj Kharal - AI & ML Engineer</title>
     {% load static %}
     <style>
@@ -187,6 +187,38 @@
 
         .nav-links a:hover::after {
             width: 100%;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--light);
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary);
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
         }
 
         /* Main Container */
@@ -416,34 +448,437 @@
             margin-bottom: 1rem;
         }
 
-        /* Responsive Design */
+        /* Comprehensive Responsive Design */
+        
+        /* Large Tablets and Small Laptops */
+        @media (max-width: 1024px) {
+            .container {
+                padding: calc(var(--section-spacing) / 2);
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .profile-image {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: calc(var(--grid-unit) * 2);
+            }
+            
+            .blog-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+        
+        /* Tablets */
         @media (max-width: 768px) {
+            .container {
+                padding: calc(var(--section-spacing) / 3);
+                margin-top: 70px;
+            }
+            
             .hero {
                 flex-direction: column;
                 text-align: center;
+                gap: 2rem;
+                padding: 2rem 0;
             }
-
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                max-width: 100%;
+            }
+            
             .profile-image {
                 width: 250px;
                 height: 250px;
             }
-
+            
             .nav-content {
-                flex-direction: column;
-                gap: 1rem;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 1rem;
             }
-
-            .nav-links {
+            
+            .mobile-menu-toggle {
                 display: flex;
-                gap: 1rem;
             }
-
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 2rem;
+                transition: left 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
             .nav-links a {
-                margin: 0;
+                margin: 1rem 0;
+                font-size: 1.1rem;
+                padding: 1rem 2rem;
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
-
+            
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            
             .social-links {
                 justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+            }
+            
+            .social-link {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+                margin-bottom: calc(var(--section-spacing) / 2);
+            }
+            
+            .section h2 {
+                font-size: 1.8rem;
+                padding-left: calc(var(--grid-unit) * 3);
+            }
+            
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: calc(var(--grid-unit) * 2);
+                padding: calc(var(--card-padding) / 2);
+            }
+            
+            .skill-card {
+                padding: calc(var(--card-padding) / 2);
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+                gap: calc(var(--grid-unit) * 2);
+                padding: calc(var(--card-padding) / 2);
+            }
+            
+            .blog-content {
+                padding: calc(var(--card-padding) / 2);
+            }
+            
+            .blog-title {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Mobile Phones */
+        @media (max-width: 480px) {
+            .container {
+                padding: calc(var(--section-spacing) / 4);
+                margin-top: 60px;
+            }
+            
+            .hero {
+                padding: 1.5rem 0;
+                gap: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            
+            .profile-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .nav-content {
+                padding: 0 0.5rem;
+            }
+            
+            .logo-text {
+                font-size: 1.2rem;
+            }
+            
+            .logo-subtext {
+                font-size: 0.6rem;
+            }
+            
+            .mobile-menu-toggle span {
+                width: 20px;
+                height: 2px;
+            }
+            
+            .nav-links {
+                top: 60px;
+                height: calc(100vh - 60px);
+            }
+            
+            .nav-links a {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+            
+            .social-links {
+                gap: 0.5rem;
+            }
+            
+            .social-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .social-link i {
+                font-size: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+                margin-bottom: calc(var(--section-spacing) / 3);
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+                padding-left: calc(var(--grid-unit) * 2);
+                margin-bottom: 1rem;
+            }
+            
+            .section h2::before {
+                width: calc(var(--grid-unit) * 2);
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: calc(var(--grid-unit) * 1.5);
+                padding: calc(var(--card-padding) / 3);
+            }
+            
+            .skill-card {
+                padding: calc(var(--card-padding) / 3);
+            }
+            
+            .skill-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .skill-card p {
+                font-size: 0.9rem;
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+                gap: calc(var(--grid-unit) * 1.5);
+                padding: calc(var(--card-padding) / 3);
+            }
+            
+            .blog-content {
+                padding: calc(var(--card-padding) / 3);
+            }
+            
+            .blog-title {
+                font-size: 1.2rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .blog-excerpt {
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .blog-date {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+                top: -12px;
+                right: 15px;
+            }
+            
+            .blog-tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
+            
+            .read-more {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Extra Small Mobile Phones */
+        @media (max-width: 360px) {
+            .container {
+                padding: calc(var(--section-spacing) / 5);
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 0.85rem;
+            }
+            
+            .profile-image {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .mobile-menu-toggle span {
+                width: 18px;
+                height: 2px;
+            }
+            
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.6rem 1rem;
+            }
+            
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .social-link {
+                width: 100%;
+                justify-content: center;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+            
+            .section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .skill-card h3 {
+                font-size: 1rem;
+            }
+            
+            .skill-card p {
+                font-size: 0.8rem;
+            }
+            
+            .blog-title {
+                font-size: 1.1rem;
+            }
+            
+            .blog-excerpt {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Landscape Mobile Orientation */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .hero {
+                flex-direction: row;
+                gap: 2rem;
+                padding: 1rem 0;
+            }
+            
+            .profile-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
+            
+            .nav-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                height: calc(100vh - 70px);
+            }
+            
+            .nav-links a {
+                margin: 0.5rem 0;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* High DPI Displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .profile-image {
+                border-width: 2px;
+            }
+            
+            .section {
+                border-width: 0.5px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .bg-animation,
+            .matrix-rain,
+            .data-flow,
+            .scroll-progress {
+                display: none;
+            }
+            
+            .navbar {
+                position: static;
+                background: none;
+                border: none;
+            }
+            
+            .container {
+                margin: 0;
+                padding: 1rem;
+            }
+            
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .section {
+                break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+            
+            .skill-card,
+            .blog-card {
+                break-inside: avoid;
             }
         }
 
@@ -516,6 +951,60 @@
         html {
             scroll-behavior: smooth;
             scroll-padding-top: 80px;
+        }
+
+        /* Touch-friendly interactions */
+        @media (hover: none) and (pointer: coarse) {
+            .skill-card:hover,
+            .blog-card:hover,
+            .social-link:hover {
+                transform: none;
+            }
+            
+            .skill-card:active,
+            .blog-card:active,
+            .social-link:active {
+                transform: scale(0.98);
+            }
+            
+            .nav-links a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .mobile-menu-toggle {
+                min-height: 44px;
+                min-width: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        .nav-links a:focus,
+        .social-link:focus,
+        .mobile-menu-toggle:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Reduced motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .bg-animation::before,
+            .data-particle {
+                animation: none;
+            }
         }
 
         /* Enhanced Navigation */
@@ -675,6 +1164,11 @@
                     <span class="logo-subtext">.dev</span>
                 </div>
             </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="nav-links">
                 <a href="#about">About</a>
                 <a href="#skills">Skills</a>
@@ -969,6 +1463,39 @@
                     });
                 }
             });
+        });
+
+        // Mobile Menu Functionality
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar') && navLinks.classList.contains('active')) {
+                mobileMenuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                mobileMenuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
         });
 
         // Initialize animations
