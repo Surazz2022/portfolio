@@ -1147,6 +1147,34 @@
             transform: translateX(5px);
         }
 
+        /* Blog lock overlay */
+        .blog-section-locked {
+            position: relative;
+        }
+
+        .blog-blurred {
+            filter: blur(6px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .blog-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            font-size: clamp(1rem, 4vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.3);
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 12px;
+        }
+
         /* Phone call hover effect */
         .phone-link {
             position: relative;
@@ -1367,6 +1395,7 @@
                     <ul style="list-style-type: none; padding-left: 0;">
                         <li>• Crash Course Completion - Jovian.ai</li>
                         <li>• Crash Course Completion - Google Developers group</li>
+                        <li>• <a href="https://learn.deeplearning.ai/accomplishments/8cf7c000-4533-4bc7-84ce-d8349a4ddbe6?usp=sharing" target="_blank" rel="noopener" title="Open CrewAI crash course" style="color: var(--primary); text-decoration: none;">Crash Course Completion - CrewAI</a></li>
                     </ul>
                 </div>
             </div>
@@ -1388,7 +1417,9 @@
 
         <section class="section" id="blog">
             <h2>Latest Blogs</h2>
-            <div class="blog-grid">
+            <div class="blog-section-locked">
+                <div class="blog-overlay">Yet to be written</div>
+                <div class="blog-grid blog-blurred" aria-hidden="true">
                 <article class="blog-card">
                     <img src="{% static 'crudapp/images/blog1.jpg' %}" alt="Machine Learning" class="blog-image">
                     <div class="blog-content">
@@ -1442,6 +1473,7 @@
                         <a href="#" class="read-more">Read More</a>
                     </div>
                 </article>
+                </div>
             </div>
         </section>
 
