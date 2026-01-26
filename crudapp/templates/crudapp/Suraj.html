@@ -1246,6 +1246,355 @@
             color: var(--secondary) !important;
             text-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
         }
+
+        /* Chatbot Widget Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 24px;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6);
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            height: 500px;
+            background: rgba(26, 26, 26, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .chatbot-window.active {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 15px 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chatbot-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        .chatbot-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .chatbot-send {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .chatbot-send:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .chatbot-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .job-offer-form {
+            display: none;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .job-offer-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chatbot-window {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                bottom: 70px;
+                right: 10px;
+            }
+
+            .chatbot-container {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -1630,6 +1979,476 @@
             createMatrixRain();
             createDataFlow();
         });
+
+        // Chatbot functionality
+        (function() {
+            const chatbotToggle = document.createElement('button');
+            chatbotToggle.className = 'chatbot-toggle';
+            chatbotToggle.innerHTML = '<i class="fas fa-comments"></i>';
+            chatbotToggle.setAttribute('aria-label', 'Open chatbot');
+
+            const chatbotWindow = document.createElement('div');
+            chatbotWindow.className = 'chatbot-window';
+            chatbotWindow.innerHTML = `
+                <div class="chatbot-header">
+                    <h3><i class="fas fa-robot"></i> AI Recruiter Assistant</h3>
+                    <button class="chatbot-close" aria-label="Close chatbot">&times;</button>
+                </div>
+                <div class="chatbot-messages" id="chatbotMessages">
+                    <div class="message bot">
+                        👋 Welcome! Click to start chatting...
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <div class="chatbot-input-area">
+                    <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message..." />
+                    <button class="chatbot-send" id="chatbotSend">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            `;
+
+            const chatbotContainer = document.createElement('div');
+            chatbotContainer.className = 'chatbot-container';
+            chatbotContainer.appendChild(chatbotToggle);
+            chatbotContainer.appendChild(chatbotWindow);
+            document.body.appendChild(chatbotContainer);
+
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const inputField = document.getElementById('chatbotInput');
+            const sendButton = document.getElementById('chatbotSend');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const closeButton = chatbotWindow.querySelector('.chatbot-close');
+
+            let isJobOfferFlow = false;
+            let sessionId = null;
+            let isFirstMessage = true;
+            let conversationState = 'initial';
+            let inactivityTimer = null;
+            const INACTIVITY_TIMEOUT = 4000; // 4 seconds
+
+            // Generate or retrieve session ID
+            function getSessionId() {
+                if (!sessionId) {
+                    sessionId = localStorage.getItem('chatbot_session_id');
+                    if (!sessionId) {
+                        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        localStorage.setItem('chatbot_session_id', sessionId);
+                    }
+                }
+                return sessionId;
+            }
+
+            // Reset inactivity timer
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    // Show initial greeting if user is inactive
+                    if (conversationState === 'normal' && messagesContainer.children.length > 0) {
+                        showInactivityPrompt();
+                    }
+                }, INACTIVITY_TIMEOUT);
+            }
+
+            // Show inactivity prompt
+            function showInactivityPrompt() {
+                const promptMessage = "👋 Still here? I'm ready to help! You can:\n\n" +
+                    "1️⃣ View LinkedIn profile (say 'linkedin')\n" +
+                    "2️⃣ View GitHub (say 'github')\n" +
+                    "3️⃣ Send email (say 'email')\n" +
+                    "4️⃣ Ask about skills, experience, or contact info\n" +
+                    "5️⃣ Submit a job offer\n\n" +
+                    "What would you like to do?";
+                
+                addMessage(promptMessage, 'bot');
+            }
+
+            // Toggle chatbot window
+            chatbotToggle.addEventListener('click', () => {
+                chatbotWindow.classList.toggle('active');
+                if (chatbotWindow.classList.contains('active')) {
+                    inputField.focus();
+                    // Start inactivity timer
+                    resetInactivityTimer();
+                    // If first time opening, send initial greeting
+                    if (isFirstMessage) {
+                        // Clear the welcome message and send greeting
+                        if (messagesContainer.children.length === 1) {
+                            messagesContainer.innerHTML = '';
+                        }
+                        sendInitialGreeting();
+                    }
+                } else {
+                    clearTimeout(inactivityTimer);
+                }
+            });
+
+            closeButton.addEventListener('click', () => {
+                chatbotWindow.classList.remove('active');
+            });
+
+            // Send initial greeting
+            function sendInitialGreeting() {
+                if (!isFirstMessage) return; // Don't send if already sent
+                
+                sendButton.disabled = true;
+                typingIndicator.classList.add('active');
+                
+                fetch('/api/chatbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ 
+                        message: 'hello',
+                        session_id: getSessionId(),
+                        is_first_message: true
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    typingIndicator.classList.remove('active');
+                    
+                    // Clear initial message and add greeting
+                    if (messagesContainer.children.length === 1) {
+                        messagesContainer.innerHTML = '';
+                    }
+                    
+                    sessionId = data.session_id || getSessionId();
+                    localStorage.setItem('chatbot_session_id', sessionId);
+                    conversationState = data.action || 'initial';
+                    isFirstMessage = false;
+                    
+                    addMessageWithOptions(data.response, 'bot', data.options || {});
+                    sendButton.disabled = false;
+                    inputField.focus();
+                })
+                .catch(error => {
+                    typingIndicator.classList.remove('active');
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                    sendButton.disabled = false;
+                    console.error('Error:', error);
+                });
+            }
+
+            // Send message function
+            function sendMessage() {
+                const message = inputField.value.trim();
+                if (!message) return;
+
+                // Clear inactivity timer
+                clearTimeout(inactivityTimer);
+
+                // Add user message to chat
+                addMessage(message, 'user');
+                inputField.value = '';
+                sendButton.disabled = true;
+
+                // Show typing indicator
+                typingIndicator.classList.add('active');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // Handle job offer flow
+                if (isJobOfferFlow || message.toLowerCase().includes('form') || message.toLowerCase().includes('submit')) {
+                    if (message.toLowerCase().includes('form') || message.toLowerCase().includes('submit')) {
+                        showJobOfferForm();
+                        typingIndicator.classList.remove('active');
+                        sendButton.disabled = false;
+                        return;
+                    }
+                }
+
+                // Send to backend
+                fetch('/api/chatbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ 
+                        message: message,
+                        session_id: getSessionId(),
+                        is_first_message: isFirstMessage
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    typingIndicator.classList.remove('active');
+                    
+                    sessionId = data.session_id || getSessionId();
+                    conversationState = data.action || conversationState;
+                    isFirstMessage = false;
+                    
+                    if (data.action === 'offer_flow') {
+                        isJobOfferFlow = true;
+                    }
+                    
+                    // Handle special actions
+                    if (data.action === 'open_linkedin' && data.options && data.options.linkedin_url) {
+                        window.open(data.options.linkedin_url, '_blank');
+                    } else if (data.action === 'open_github' && data.options && data.options.github_url) {
+                        window.open(data.options.github_url, '_blank');
+                    } else if (data.action === 'open_email' && data.options) {
+                        const email = data.options.email || '';
+                        const subject = encodeURIComponent(data.options.email_subject || 'Offer letter for Senior AI Engineer');
+                        window.location.href = `mailto:${email}?subject=${subject}`;
+                    }
+                    
+                    addMessageWithOptions(data.response, 'bot', data.options || {});
+                    sendButton.disabled = false;
+                    inputField.focus();
+                })
+                .catch(error => {
+                    typingIndicator.classList.remove('active');
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                    sendButton.disabled = false;
+                    console.error('Error:', error);
+                });
+            }
+
+            // Add message to chat
+            function addMessage(text, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                
+                // Convert markdown-style formatting to HTML
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = formattedText;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Add message with interactive options
+            function addMessageWithOptions(text, type, options) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                
+                // Convert markdown-style formatting to HTML
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = formattedText;
+                
+                // Add quick action buttons if options are available
+                if (options && Object.keys(options).length > 0) {
+                    const buttonsDiv = document.createElement('div');
+                    buttonsDiv.className = 'chatbot-quick-actions';
+                    buttonsDiv.style.marginTop = '10px';
+                    buttonsDiv.style.display = 'flex';
+                    buttonsDiv.style.gap = '8px';
+                    buttonsDiv.style.flexWrap = 'wrap';
+                    
+                    if (options.linkedin_url) {
+                        const linkedinBtn = document.createElement('button');
+                        linkedinBtn.className = 'chatbot-quick-btn';
+                        linkedinBtn.textContent = '🔗 Open LinkedIn';
+                        linkedinBtn.style.cssText = 'padding: 6px 12px; background: #0077b5; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                        linkedinBtn.onclick = () => window.open(options.linkedin_url, '_blank');
+                        buttonsDiv.appendChild(linkedinBtn);
+                    }
+                    
+                    if (options.github_url) {
+                        const githubBtn = document.createElement('button');
+                        githubBtn.className = 'chatbot-quick-btn';
+                        githubBtn.textContent = '💻 Open GitHub';
+                        githubBtn.style.cssText = 'padding: 6px 12px; background: #24292e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                        githubBtn.onclick = () => window.open(options.github_url, '_blank');
+                        buttonsDiv.appendChild(githubBtn);
+                    }
+                    
+                    if (options.email) {
+                        const emailBtn = document.createElement('button');
+                        emailBtn.className = 'chatbot-quick-btn';
+                        emailBtn.textContent = '📧 Send Email';
+                        emailBtn.style.cssText = 'padding: 6px 12px; background: #ea4335; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
+                        const subject = encodeURIComponent(options.email_subject || 'Offer letter for Senior AI Engineer');
+                        emailBtn.onclick = () => window.location.href = `mailto:${options.email}?subject=${subject}`;
+                        buttonsDiv.appendChild(emailBtn);
+                    }
+                    
+                    messageDiv.appendChild(buttonsDiv);
+                }
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Show job offer form
+            function showJobOfferForm() {
+                const formHTML = `
+                    <div class="job-offer-form active" id="jobOfferForm">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">📝 Job Offer Submission</h4>
+                        <form id="jobOfferFormElement">
+                            <div class="form-group">
+                                <label>Your Name *</label>
+                                <input type="text" name="recruiter_name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Your Email *</label>
+                                <input type="email" name="recruiter_email" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Company Name *</label>
+                                <input type="text" name="recruiter_company" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Phone (Optional)</label>
+                                <input type="text" name="recruiter_phone" />
+                            </div>
+                            <div class="form-group">
+                                <label>Job Title *</label>
+                                <input type="text" name="job_title" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Company Name *</label>
+                                <input type="text" name="company_name" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Job Description *</label>
+                                <textarea name="job_description" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input type="text" name="location" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Work Type *</label>
+                                <select name="work_type" required>
+                                    <option value="remote">Remote</option>
+                                    <option value="onsite">On-site</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Salary Range (Optional)</label>
+                                <input type="text" name="salary_range" placeholder="e.g., $80,000 - $120,000" />
+                            </div>
+                            <div class="form-group">
+                                <label>Benefits (Optional)</label>
+                                <textarea name="benefits" placeholder="Health insurance, 401k, etc."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Start Date (Optional)</label>
+                                <input type="text" name="start_date" placeholder="e.g., ASAP, January 2025" />
+                            </div>
+                            <div class="form-group">
+                                <label>Additional Information (Optional)</label>
+                                <textarea name="additional_info"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Submit Offer</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelJobOfferForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                
+                const formDiv = document.createElement('div');
+                formDiv.innerHTML = formHTML;
+                messagesContainer.appendChild(formDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // Handle form submission
+                const form = document.getElementById('jobOfferFormElement');
+                form.addEventListener('submit', handleJobOfferSubmit);
+            }
+
+            // Handle job offer form submission
+            function handleJobOfferSubmit(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                sendButton.disabled = true;
+                typingIndicator.classList.add('active');
+
+                fetch('/api/job-offer/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    typingIndicator.classList.remove('active');
+                    const formDiv = document.getElementById('jobOfferForm');
+                    if (formDiv) {
+                        formDiv.remove();
+                    }
+                    
+                    if (data.success) {
+                        addMessage(data.message, 'bot');
+                        isJobOfferFlow = false;
+                    } else {
+                        addMessage(data.message + ' Please check the form and try again.', 'bot');
+                    }
+                    sendButton.disabled = false;
+                })
+                .catch(error => {
+                    typingIndicator.classList.remove('active');
+                    addMessage('An error occurred. Please try again.', 'bot');
+                    sendButton.disabled = false;
+                    console.error('Error:', error);
+                });
+            }
+
+            // Cancel job offer form
+            window.cancelJobOfferForm = function() {
+                const formDiv = document.getElementById('jobOfferForm');
+                if (formDiv) {
+                    formDiv.remove();
+                }
+                isJobOfferFlow = false;
+                addMessage('No problem! How else can I help you?', 'bot');
+            };
+
+            // Send on Enter key
+            inputField.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !sendButton.disabled) {
+                    sendMessage();
+                }
+            });
+
+            // Track input activity
+            inputField.addEventListener('input', () => {
+                clearTimeout(inactivityTimer);
+            });
+
+            inputField.addEventListener('focus', () => {
+                clearTimeout(inactivityTimer);
+            });
+
+
+            // Send button click
+            sendButton.addEventListener('click', sendMessage);
+
+            // Get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        })();
     </script>
 </body>
 </html>

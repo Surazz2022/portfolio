@@ -9,5 +9,7 @@ urlpatterns = [
     path('<int:pk>/edit/', views.item_update, name='item_update'),
     path('<int:pk>/delete/', views.item_delete, name='item_delete'),
     path('', views.Suraj, name='Suraj'),
-
+    # Chatbot endpoints
+    path('api/chatbot/', views.chatbot_interact, name='chatbot_interact'),
+    path('api/job-offer/', views.submit_job_offer, name='submit_job_offer'),
 ]
