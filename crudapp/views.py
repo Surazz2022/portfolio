@@ -11,6 +11,24 @@ from .ml_chatbot import get_chatbot_service
 from .conversation_manager import ConversationManager
 from .response_generator import ResponseGenerator
 
+
+class DefaultPersonalInfo:
+    """Fallback personal info when database is empty (e.g., on Vercel)"""
+    full_name = 'Suraj Kharal'
+    title = 'Junior Machine Learning Engineer & Data Analyst'
+    email = 'surz.khl49@gmail.com'
+    phone = '+977-9869407702'
+    location = 'Devdaha 07, Rupandehi, Nepal'
+    linkedin_url = 'https://www.linkedin.com/in/suraj-kharal-baa9271b1/'
+    github_url = 'https://github.com/Surazz2022'
+    bio = 'I am a motivated data professional with a good foundation in machine learning, statistics, and python programming.'
+    skills_summary = 'Python, Machine Learning, Data Analysis, LSTM, ARIMA, Time Series Analysis, Data Pipelines'
+    experience_summary = 'Junior ML Engineer at CognifyNow, Junior Data Analyst at NepseTrading'
+    availability = 'Available for opportunities'
+    preferred_roles = 'Machine Learning Engineer, Data Scientist, Data Analyst'
+    salary_expectation = None
+    work_preference = 'any'
+
 def item_list(request):
     items = Item.objects.all()
     return render(request, 'crudapp/item_list.html', {'items': items})
@@ -71,41 +89,14 @@ def chatbot_interact(request):
         # Get or create conversation session
         conversation, is_new_session = ConversationManager.get_or_create_session(session_id)
 
-        # Get personal info (gracefully handle missing DB)
+        # Get personal info (gracefully handle missing DB, use defaults on Vercel)
         try:
             personal_info = PersonalInfo.objects.first()
         except Exception:
             personal_info = None
-        
-        # Default responses if no personal info exists
-        default_responses = {
-            'name': 'Suraj Kharal',
-            'title': 'Junior Machine Learning Engineer & Data Analyst',
-            'email': 'surz.khl49@gmail.com',
-            'phone': '+977-9869407702',
-            'location': 'Devdaha 07, Rupandehi, Nepal',
-            'bio': 'I am a motivated data professional with a good foundation in machine learning, statistics, and python programming.',
-            'skills': 'Python, Machine Learning, Data Analysis, LSTM, ARIMA, Time Series Analysis, Data Pipelines',
-            'experience': 'Junior ML Engineer at CognifyNow, Junior Data Analyst at NepseTrading',
-            'availability': 'Available for opportunities',
-            'preferred_roles': 'Machine Learning Engineer, Data Scientist, Data Analyst',
-        }
-        
-        if personal_info:
-            info = {
-                'name': personal_info.full_name,
-                'title': personal_info.title,
-                'email': personal_info.email,
-                'phone': personal_info.phone,
-                'location': personal_info.location,
-                'bio': personal_info.bio,
-                'skills': personal_info.skills_summary,
-                'experience': personal_info.experience_summary,
-                'availability': personal_info.availability,
-                'preferred_roles': personal_info.preferred_roles,
-            }
-        else:
-            info = default_responses
+
+        if not personal_info:
+            personal_info = DefaultPersonalInfo()
         
         # Handle initial greeting flow - ONLY for first message or new session
         if is_new_session or (is_first_message and conversation.conversation_state == 'initial'):
@@ -251,6 +242,8 @@ def _generate_response_from_intent(intent, info, user_message):
         personal_info = PersonalInfo.objects.first()
     except Exception:
         personal_info = None
+    if not personal_info:
+        personal_info = DefaultPersonalInfo()
     return ResponseGenerator.generate_response(intent, personal_info, user_message)
 
 
