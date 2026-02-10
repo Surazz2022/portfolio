@@ -1,31 +1,74 @@
 """
 Conversation State Manager
 Handles conversation flow, state transitions, and context management
+Works with both database (local) and in-memory (serverless) storage
 """
+import os
 import uuid
 import random
 from .models import ChatbotConversation, PersonalInfo
 
+# In-memory session storage for serverless environments
+_in_memory_sessions = {}
+
+IS_SERVERLESS = os.environ.get('VERCEL', False) or os.environ.get('SERVERLESS', False)
+
+
+class InMemoryConversation:
+    """Lightweight conversation object for serverless environments"""
+
+    def __init__(self, session_id):
+        self.session_id = session_id
+        self.conversation_state = 'initial'
+        self.conversation_history = []
+        self.context = {}
+
+    def save(self):
+        """No-op for in-memory storage (already stored in dict)"""
+        pass
+
 
 class ConversationManager:
     """Manages conversation state and flow"""
-    
+
     @staticmethod
     def get_or_create_session(session_id=None):
         """Get existing session or create a new one"""
         if not session_id:
             session_id = str(uuid.uuid4())
-        
-        conversation, created = ChatbotConversation.objects.get_or_create(
-            session_id=session_id,
-            defaults={
-                'conversation_state': 'initial',
-                'conversation_history': [],
-                'context': {}
-            }
-        )
-        
-        return conversation, created
+
+        if IS_SERVERLESS:
+            # Use in-memory storage on serverless
+            if session_id in _in_memory_sessions:
+                return _in_memory_sessions[session_id], False
+            else:
+                conversation = InMemoryConversation(session_id)
+                _in_memory_sessions[session_id] = conversation
+                # Clean up old sessions (keep max 1000)
+                if len(_in_memory_sessions) > 1000:
+                    oldest_keys = list(_in_memory_sessions.keys())[:500]
+                    for key in oldest_keys:
+                        del _in_memory_sessions[key]
+                return conversation, True
+        else:
+            # Use database on local
+            try:
+                conversation, created = ChatbotConversation.objects.get_or_create(
+                    session_id=session_id,
+                    defaults={
+                        'conversation_state': 'initial',
+                        'conversation_history': [],
+                        'context': {}
+                    }
+                )
+                return conversation, created
+            except Exception:
+                # Fallback to in-memory if DB fails
+                if session_id in _in_memory_sessions:
+                    return _in_memory_sessions[session_id], False
+                conversation = InMemoryConversation(session_id)
+                _in_memory_sessions[session_id] = conversation
+                return conversation, True
     
     @staticmethod
     def add_message_to_history(conversation, message, sender='user'):
@@ -56,8 +99,6 @@ class ConversationManager:
     @staticmethod
     def get_initial_greeting(personal_info):
         """Generate varied initial greeting with options"""
-        import random
-        
         if personal_info:
             name = personal_info.full_name
             linkedin = personal_info.linkedin_url
@@ -138,14 +179,11 @@ class ConversationManager:
         # Skip all
         elif any(word in message_lower for word in ['skip', 'none', 'no thanks', 'not now', 'chat', 'start', 'begin']):
             ConversationManager.update_state(conversation, 'normal')
-            # Use ResponseGenerator for varied skip responses
-            from .response_generator import ResponseGenerator
             skip_responses = [
                 "No problem! How can I help you today? You can ask about skills, experience, or submit a job offer.",
                 "Sure! Let's chat. Feel free to ask about skills, experience, contact info, or job offers.",
                 "Great! What would you like to know? I can tell you about skills, experience, availability, or help with job offers.",
             ]
-            import random
             return {
                 'response': random.choice(skip_responses),
                 'action': 'normal',

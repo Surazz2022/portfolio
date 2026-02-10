@@ -24,9 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-j5i&#xx55msu0n(_*m3#iqzmb9!625mp@j(rkho=qg$3r0aqc_"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('VERCEL', '') == '' # False on Vercel, True locally
 
 ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://surajkharal.vercel.app',
+    'https://*.vercel.app',
+]
 
 
 # Application definition
@@ -75,12 +80,23 @@ WSGI_APPLICATION = "django_crud_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ.get('VERCEL'):
+    # On Vercel: use /tmp for SQLite (ephemeral but writable)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "/tmp/db.sqlite3",
+        }
     }
-}
+    # Use cookie-based sessions to avoid DB writes on serverless
+    SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation

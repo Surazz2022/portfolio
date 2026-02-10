@@ -12,7 +12,10 @@ class ResponseGenerator:
     @staticmethod
     def get_personal_info():
         """Get personal info from database"""
-        return PersonalInfo.objects.first()
+        try:
+            return PersonalInfo.objects.first()
+        except Exception:
+            return None
     
     @staticmethod
     def generate_about_response(personal_info, user_message, context=None):

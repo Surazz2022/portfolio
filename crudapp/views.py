@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 import json
 from .models import Item, PersonalInfo, JobOffer, ChatbotTrainingData
 from .forms import ItemForm, JobOfferForm
-from .ml_chatbot import MLChatbotService
+from .ml_chatbot import get_chatbot_service
 from .conversation_manager import ConversationManager
 from .response_generator import ResponseGenerator
 
@@ -45,7 +45,10 @@ def item_delete(request, pk):
 
 def Suraj(request):
     # Get personal info if exists, otherwise use defaults
-    personal_info = PersonalInfo.objects.first()
+    try:
+        personal_info = PersonalInfo.objects.first()
+    except Exception:
+        personal_info = None
     return render(request, 'crudapp/Suraj.html', {'personal_info': personal_info})
 
 
@@ -67,9 +70,12 @@ def chatbot_interact(request):
         
         # Get or create conversation session
         conversation, is_new_session = ConversationManager.get_or_create_session(session_id)
-        
-        # Get personal info
-        personal_info = PersonalInfo.objects.first()
+
+        # Get personal info (gracefully handle missing DB)
+        try:
+            personal_info = PersonalInfo.objects.first()
+        except Exception:
+            personal_info = None
         
         # Default responses if no personal info exists
         default_responses = {
@@ -170,8 +176,8 @@ def chatbot_interact(request):
         # Normal conversation flow with ML model
         ConversationManager.add_message_to_history(conversation, user_message, 'user')
         
-        # Initialize ML chatbot service
-        ml_chatbot = MLChatbotService()
+        # Get singleton ML chatbot service
+        ml_chatbot = get_chatbot_service()
         
         # Get conversation history for context
         history = conversation.conversation_history[:-1] if len(conversation.conversation_history) > 1 else []
@@ -185,9 +191,12 @@ def chatbot_interact(request):
         
         predicted_intent = prediction['intent']
         
-        # Get training data for similar message matching
-        training_data = ChatbotTrainingData.objects.all()
-        training_tuples = [(item.user_message, item.intent, item.response) for item in training_data]
+        # Get training data for similar message matching (handle missing DB)
+        try:
+            training_data = ChatbotTrainingData.objects.all()
+            training_tuples = [(item.user_message, item.intent, item.response) for item in training_data]
+        except Exception:
+            training_tuples = []
         
         # Try to find a matching response from training data
         response = None
@@ -238,8 +247,10 @@ def chatbot_interact(request):
 
 def _generate_response_from_intent(intent, info, user_message):
     """Generate response based on predicted intent (fallback method)"""
-    # This is now a fallback - main responses use ResponseGenerator
-    personal_info = PersonalInfo.objects.first()
+    try:
+        personal_info = PersonalInfo.objects.first()
+    except Exception:
+        personal_info = None
     return ResponseGenerator.generate_response(intent, personal_info, user_message)
 
 

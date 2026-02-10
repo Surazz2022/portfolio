@@ -91,13 +91,14 @@
         /* Navigation */
         .navbar {
             background: rgba(26, 26, 26, 0.95);
-            padding: 1rem 0;
+            padding: 0.75rem 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            height: auto;
         }
 
         .nav-content {
@@ -166,6 +167,11 @@
             100% { transform: scale(1); }
         }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
         .nav-links a {
             color: var(--light);
             text-decoration: none;
@@ -224,8 +230,9 @@
         /* Main Container */
         .container {
             max-width: var(--container-width);
-            margin: 80px auto 0;
+            margin: 0 auto;
             padding: var(--section-spacing);
+            padding-top: calc(var(--section-spacing) + 60px);
             position: relative;
         }
 
@@ -449,11 +456,31 @@
         }
 
         /* Comprehensive Responsive Design */
-        
+
+        /* Large Screens / Ultrawide */
+        @media (min-width: 1400px) {
+            :root {
+                --container-width: min(1300px, 85vw);
+            }
+
+            .hero h1 {
+                font-size: 4rem;
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+            }
+
+            .nav-content {
+                max-width: 1300px;
+            }
+        }
+
         /* Large Tablets and Small Laptops */
         @media (max-width: 1024px) {
             .container {
                 padding: calc(var(--section-spacing) / 2);
+                padding-top: calc(var(--section-spacing) / 2 + 60px);
             }
             
             .hero h1 {
@@ -483,7 +510,7 @@
         @media (max-width: 768px) {
             .container {
                 padding: calc(var(--section-spacing) / 3);
-                margin-top: 70px;
+                padding-top: calc(var(--section-spacing) / 3 + 60px);
             }
             
             .hero {
@@ -536,6 +563,7 @@
             
             .nav-links.active {
                 left: 0;
+                z-index: 1200;
             }
             
             .nav-links a {
@@ -601,7 +629,7 @@
         @media (max-width: 480px) {
             .container {
                 padding: calc(var(--section-spacing) / 4);
-                margin-top: 60px;
+                padding-top: calc(var(--section-spacing) / 4 + 56px);
             }
             
             .hero {
@@ -950,7 +978,7 @@
         /* Smooth Scroll Behavior */
         html {
             scroll-behavior: smooth;
-            scroll-padding-top: 80px;
+            scroll-padding-top: 70px;
         }
 
         /* Touch-friendly interactions */
@@ -1252,7 +1280,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 1100;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -1284,6 +1312,7 @@
             width: 380px;
             max-width: calc(100vw - 40px);
             height: 500px;
+            max-height: calc(100vh - 200px);
             background: rgba(26, 26, 26, 0.98);
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
@@ -1585,7 +1614,8 @@
         @media (max-width: 768px) {
             .chatbot-window {
                 width: calc(100vw - 20px);
-                height: calc(100vh - 100px);
+                height: calc(100vh - 160px);
+                max-height: 65vh;
                 bottom: 70px;
                 right: 10px;
             }
@@ -1593,6 +1623,42 @@
             .chatbot-container {
                 bottom: 15px;
                 right: 15px;
+            }
+
+            .chatbot-toggle {
+                width: 52px;
+                height: 52px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-window {
+                width: calc(100vw - 16px);
+                height: calc(100vh - 150px);
+                max-height: 60vh;
+                bottom: 62px;
+                right: 8px;
+                border-radius: 16px;
+            }
+
+            .chatbot-container {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .chatbot-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            .chatbot-header {
+                padding: 12px 16px;
+            }
+
+            .chatbot-header h3 {
+                font-size: 14px;
             }
         }
     </style>
