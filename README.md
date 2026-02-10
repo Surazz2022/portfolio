@@ -83,7 +83,7 @@ The chatbot recognizes these intents and responds with relevant information:
 
 ## Author
 
-**Suraj Kharal** - Junior Machine Learning Engineer & Data Analyst
+**Suraj Kharal** - AI/ML Engineer
 
 - [LinkedIn](https://www.linkedin.com/in/suraj-kharal-baa9271b1/)
 - [GitHub](https://github.com/Surazz2022)
