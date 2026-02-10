@@ -219,51 +219,80 @@ class MLChatbotService:
             print(f"Error training model: {e}")
             return False
 
+    # Keyword-based intent matching as reliable fallback
+    KEYWORD_INTENTS = {
+        'skills': ['skill', 'skills', 'technologies', 'tech stack', 'programming', 'python',
+                    'machine learning', 'frameworks', 'tools', 'expertise', 'proficient',
+                    'good at', 'know', 'capable'],
+        'experience': ['experience', 'work history', 'career', 'worked', 'jobs', 'companies',
+                        'professional background', 'employment', 'current job', 'past job'],
+        'contact': ['contact', 'email', 'phone', 'reach', 'get in touch', 'call',
+                     'message him', 'connect'],
+        'about': ['who is', 'tell me about', 'about suraj', 'introduce', 'who are you',
+                   'describe', 'background', 'what does suraj do'],
+        'availability': ['available', 'availability', 'looking for work', 'open to',
+                          'hiring', 'job status', 'employed', 'open to work'],
+        'job_offer': ['job offer', 'hire', 'recruit', 'position', 'opportunity',
+                       'offer letter', 'opening', 'vacancy'],
+        'greeting': ['hello', 'hi', 'hey', 'good morning', 'good afternoon',
+                      'good evening', 'howdy', 'whats up'],
+    }
+
+    def _keyword_match(self, message):
+        """Match intent using keywords as a reliable fallback"""
+        message_lower = message.lower().strip()
+        for intent, keywords in self.KEYWORD_INTENTS.items():
+            if any(kw in message_lower for kw in keywords):
+                return intent
+        return None
+
     def predict_intent(self, user_message, conversation_history=None):
         """
-        Predict the intent of a user message with context awareness
+        Predict the intent of a user message.
+        Uses ML model on the clean message only (no history mixing).
+        Falls back to keyword matching if ML confidence is low.
         """
         if not self.model:
-            return 'default'
+            return self._keyword_match(user_message) or 'default'
 
         try:
             cleaned_message = user_message.lower().strip()
 
+            # Check for "about suraj" type questions first
             suraj_keywords = ['suraj', 'kharal', 'suraj kharal', 'him', 'his', 'he']
             is_about_suraj = any(keyword in cleaned_message for keyword in suraj_keywords)
-
-            if conversation_history and len(conversation_history) > 0:
-                recent_messages = conversation_history[-3:] if len(conversation_history) > 3 else conversation_history
-                context_text = " ".join([msg.get('message', '') for msg in recent_messages if isinstance(msg, dict)])
-                enhanced_message = f"{context_text} {cleaned_message}".strip()
-            else:
-                enhanced_message = cleaned_message
 
             if is_about_suraj and any(word in cleaned_message for word in ['who', 'what', 'tell', 'about', 'know']):
                 if not any(word in cleaned_message for word in ['skill', 'experience', 'contact', 'email', 'phone']):
                     return 'about'
 
-            intent = self.model.predict([enhanced_message])[0]
-
-            probabilities = self.model.predict_proba([enhanced_message])[0]
+            # Predict using ML model on clean message only (no history noise)
+            intent = self.model.predict([cleaned_message])[0]
+            probabilities = self.model.predict_proba([cleaned_message])[0]
             max_probability = max(probabilities)
 
-            if max_probability < 0.3:
-                return 'default'
+            # If ML model is confident enough, use its prediction
+            if max_probability >= 0.3:
+                return intent
 
-            return intent
+            # Otherwise, fall back to keyword matching
+            keyword_intent = self._keyword_match(cleaned_message)
+            if keyword_intent:
+                return keyword_intent
+
+            return 'default'
         except Exception as e:
             print(f"Error predicting intent: {e}")
-            return 'default'
+            return self._keyword_match(user_message) or 'default'
 
     def predict_with_context(self, user_message, conversation_state=None, conversation_history=None):
         """
-        Enhanced prediction that considers conversation state and history
+        Enhanced prediction that considers conversation state
         """
         if not self.model:
             return {
-                'intent': 'default',
-                'confidence': 0.0,
+                'intent': self._keyword_match(user_message) or 'default',
+                'confidence': 0.5,
                 'actions': []
             }
 
@@ -288,6 +317,7 @@ class MLChatbotService:
                 elif any(word in cleaned_message for word in ['no', 'n', 'skip', 'not now']):
                     return {'intent': 'email_no', 'confidence': 1.0, 'actions': ['end_greeting']}
 
+            # Use clean message for both intent and confidence (consistent)
             intent = self.predict_intent(user_message, conversation_history)
             probabilities = self.model.predict_proba([cleaned_message])[0]
             max_probability = max(probabilities)
@@ -300,7 +330,7 @@ class MLChatbotService:
         except Exception as e:
             print(f"Error in predict_with_context: {e}")
             return {
-                'intent': 'default',
+                'intent': self._keyword_match(user_message) or 'default',
                 'confidence': 0.0,
                 'actions': []
             }
