@@ -5,13 +5,15 @@ Works with both database (local) and in-memory (serverless) storage
 """
 import os
 import uuid
-import random
+import time
 from .models import ChatbotConversation, PersonalInfo
 
 # In-memory session storage for serverless environments
 _in_memory_sessions = {}
 
 IS_SERVERLESS = os.environ.get('VERCEL', False) or os.environ.get('SERVERLESS', False)
+
+SESSION_TTL_SECONDS = 3600  # 1 hour
 
 
 class InMemoryConversation:
@@ -22,6 +24,14 @@ class InMemoryConversation:
         self.conversation_state = 'initial'
         self.conversation_history = []
         self.context = {}
+        self.created_at = time.time()
+        self.last_active = time.time()
+
+    def is_expired(self):
+        return (time.time() - self.last_active) > SESSION_TTL_SECONDS
+
+    def touch(self):
+        self.last_active = time.time()
 
     def save(self):
         """No-op for in-memory storage (already stored in dict)"""
@@ -38,21 +48,35 @@ class ConversationManager:
             session_id = str(uuid.uuid4())
 
         if IS_SERVERLESS:
-            # Use in-memory storage on serverless
+            # Expire session if inactive for more than 1 hour
             if session_id in _in_memory_sessions:
-                return _in_memory_sessions[session_id], False
-            else:
-                conversation = InMemoryConversation(session_id)
-                _in_memory_sessions[session_id] = conversation
-                # Clean up old sessions (keep max 1000)
-                if len(_in_memory_sessions) > 1000:
-                    oldest_keys = list(_in_memory_sessions.keys())[:500]
-                    for key in oldest_keys:
-                        del _in_memory_sessions[key]
-                return conversation, True
+                existing = _in_memory_sessions[session_id]
+                if existing.is_expired():
+                    del _in_memory_sessions[session_id]
+                else:
+                    existing.touch()
+                    return existing, False
+
+            conversation = InMemoryConversation(session_id)
+            _in_memory_sessions[session_id] = conversation
+            # Clean up expired sessions
+            expired = [k for k, v in _in_memory_sessions.items() if v.is_expired()]
+            for k in expired:
+                del _in_memory_sessions[k]
+            return conversation, True
         else:
             # Use database on local
             try:
+                import datetime
+                from django.utils import timezone
+                expiry_threshold = timezone.now() - datetime.timedelta(hours=1)
+
+                # Expire old sessions by deleting them so get_or_create treats them as new
+                ChatbotConversation.objects.filter(
+                    session_id=session_id,
+                    updated_at__lt=expiry_threshold
+                ).delete()
+
                 conversation, created = ChatbotConversation.objects.get_or_create(
                     session_id=session_id,
                     defaults={
@@ -65,7 +89,10 @@ class ConversationManager:
             except Exception:
                 # Fallback to in-memory if DB fails
                 if session_id in _in_memory_sessions:
-                    return _in_memory_sessions[session_id], False
+                    existing = _in_memory_sessions[session_id]
+                    if not existing.is_expired():
+                        existing.touch()
+                        return existing, False
                 conversation = InMemoryConversation(session_id)
                 _in_memory_sessions[session_id] = conversation
                 return conversation, True
@@ -79,7 +106,7 @@ class ConversationManager:
         conversation.conversation_history.append({
             'message': message,
             'sender': sender,
-            'timestamp': str(uuid.uuid4())  # Simple timestamp alternative
+            'timestamp': time.time()
         })
         
         # Keep only last 20 messages to avoid bloating
@@ -110,16 +137,14 @@ class ConversationManager:
             github = 'https://github.com/Surazz2022'
             email = 'surz.khl49@gmail.com'
         
-        # Varied greeting messages
-        greeting_templates = [
-            f"Hello! 👋 I'm an AI assistant representing **{name}**.\n\nI'd like to help you get to know him better. Would you like to:\n\n1️⃣ **View his LinkedIn profile** (say 'linkedin' or '1')\n2️⃣ **View his GitHub repositories** (say 'github' or '2')\n3️⃣ **Send him an email** (say 'email' or '3') - with pre-filled subject: 'Offer letter for Senior AI Engineer'\n\nOr say **Skip** to start chatting directly.\n\nWhat would you like to do first?",
-            
-            f"Hi there! 👋 Welcome! I'm here to help you learn about **{name}**.\n\nQuick options:\n\n1️⃣ **LinkedIn profile** (say 'linkedin')\n2️⃣ **GitHub repositories** (say 'github')\n3️⃣ **Send email** (say 'email') - Subject: 'Offer letter for Senior AI Engineer'\n\nOr just **Skip** to start asking questions!\n\nWhat interests you?",
-            
-            f"Welcome! 👋 I'm an AI assistant for **{name}**.\n\nWould you like to:\n\n1️⃣ Check out his **LinkedIn** (say 'linkedin')\n2️⃣ Browse his **GitHub** (say 'github')\n3️⃣ **Email him** (say 'email') - Pre-filled: 'Offer letter for Senior AI Engineer'\n\nOr say **Skip** to chat directly!\n\nHow can I help?",
-        ]
-        
-        greeting = random.choice(greeting_templates)
+        greeting = (
+            f"Hello! 👋 I'm an AI assistant representing **{name}**.\n\n"
+            f"Would you like to:\n\n"
+            f"1️⃣ **View his LinkedIn profile** (say 'linkedin' or '1')\n"
+            f"2️⃣ **View his GitHub repositories** (say 'github' or '2')\n"
+            f"3️⃣ **Send him an email** (say 'email' or '3')\n\n"
+            f"Or say **Skip** to start chatting directly."
+        )
         
         return {
             'message': greeting,
@@ -127,7 +152,7 @@ class ConversationManager:
                 'linkedin_url': linkedin,
                 'github_url': github,
                 'email': email,
-                'email_subject': 'Offer letter for Senior AI Engineer'
+                'email_subject': 'Portfolio Inquiry — Suraj Kharal'
             }
         }
     
@@ -166,26 +191,21 @@ class ConversationManager:
         elif any(word in message_lower for word in ['email', 'mail', 'send', 'contact', '3', 'third', 'three']):
             ConversationManager.update_state(conversation, 'email_question')
             return {
-                'response': "Perfect! Would you like me to open your email client to send {name} an email with the subject 'Offer letter for Senior AI Engineer'? (Yes/No/Skip)".format(
+                'response': "Perfect! Would you like me to open your email client to send {name} an email with the subject 'Portfolio Inquiry — Suraj Kharal'? (Yes/No/Skip)".format(
                     name=personal_info.full_name if personal_info else 'Suraj Kharal'
                 ),
                 'action': 'email_question',
                 'options': {
                     'email': personal_info.email if personal_info else 'surz.khl49@gmail.com',
-                    'email_subject': 'Offer letter for Senior AI Engineer'
+                    'email_subject': 'Portfolio Inquiry — Suraj Kharal'
                 }
             }
         
         # Skip all
         elif any(word in message_lower for word in ['skip', 'none', 'no thanks', 'not now', 'chat', 'start', 'begin']):
             ConversationManager.update_state(conversation, 'normal')
-            skip_responses = [
-                "No problem! How can I help you today? You can ask about skills, experience, or submit a job offer.",
-                "Sure! Let's chat. Feel free to ask about skills, experience, contact info, or job offers.",
-                "Great! What would you like to know? I can tell you about skills, experience, availability, or help with job offers.",
-            ]
             return {
-                'response': random.choice(skip_responses),
+                'response': "No problem! Feel free to ask about research interests, skills, projects, experience, or contact details.",
                 'action': 'normal',
                 'options': {}
             }
@@ -237,13 +257,8 @@ class ConversationManager:
                 ConversationManager.update_state(conversation, 'email_question')
                 github_url = personal_info.github_url if personal_info and personal_info.github_url else 'https://github.com/Surazz2022'
                 name = personal_info.full_name if personal_info else 'Suraj'
-                github_responses = [
-                    f"Opening GitHub profile! 💻\n\nWould you like to send {name} an email with the subject 'Offer letter for Senior AI Engineer'? (Yes/No/Skip)",
-                    f"GitHub opening! 💻\n\nNext, want to email {name}? Subject will be 'Offer letter for Senior AI Engineer'. (Yes/No/Skip)",
-                    f"Here's the GitHub! 💻\n\nReady to send {name} an email? (Yes/No/Skip)",
-                ]
                 return {
-                    'response': random.choice(github_responses),
+                    'response': f"Opening GitHub profile! 💻\n\nWould you like to send {name} an email as well? (Yes/No/Skip)",
                     'action': 'open_github',
                     'options': {
                         'github_url': github_url,
@@ -253,17 +268,12 @@ class ConversationManager:
             elif any(word in message_lower for word in ['no', 'n', 'skip']):
                 ConversationManager.update_state(conversation, 'email_question')
                 name = personal_info.full_name if personal_info else 'Suraj'
-                skip_responses = [
-                    f"Okay! Would you like to send {name} an email with the subject 'Offer letter for Senior AI Engineer'? (Yes/No/Skip)",
-                    f"Sure! Next - email {name}? Subject: 'Offer letter for Senior AI Engineer'. (Yes/No/Skip)",
-                    f"No problem! Want to email {name}? (Yes/No/Skip)",
-                ]
                 return {
-                    'response': random.choice(skip_responses),
+                    'response': f"No problem! Would you like to send {name} an email? (Yes/No/Skip)",
                     'action': 'email_question',
                     'options': {
                         'email': personal_info.email if personal_info else 'surz.khl49@gmail.com',
-                        'email_subject': 'Offer letter for Senior AI Engineer'
+                        'email_subject': 'Portfolio Inquiry — Suraj Kharal'
                     }
                 }
             else:
@@ -279,30 +289,20 @@ class ConversationManager:
                 email = personal_info.email if personal_info else 'surz.khl49@gmail.com'
                 name = personal_info.full_name if personal_info else 'Suraj'
                 # Varied responses after email
-                email_responses = [
-                    f"Opening email client! 📧\n\nGreat! I've opened your email client. Feel free to ask me anything else about {name} or submit a job offer!",
-                    f"Email client opening! 📧\n\nPerfect! You can now send the email. Is there anything else you'd like to know about {name}?",
-                    f"Email ready! 📧\n\nYour email client should be open now. Need any other information about {name}?",
-                ]
                 return {
-                    'response': random.choice(email_responses),
+                    'response': f"Opening email client! 📧\n\nFeel free to ask me anything else about {name}.",
                     'action': 'open_email',
                     'options': {
                         'email': email,
-                        'email_subject': 'Offer letter for Senior AI Engineer'
+                        'email_subject': 'Portfolio Inquiry — Suraj Kharal'
                     }
                 }
             elif any(word in message_lower for word in ['no', 'n', 'skip']):
                 ConversationManager.update_state(conversation, 'normal')
                 name = personal_info.full_name if personal_info else 'Suraj'
                 # Varied responses
-                skip_responses = [
-                    f"No problem! How can I help you today? You can ask about {name}'s skills, experience, or submit a job offer.",
-                    f"Sure! What would you like to know? Feel free to ask about {name}'s background, skills, or availability.",
-                    f"Okay! I'm here to help. Ask me about {name}'s experience, skills, contact info, or job opportunities.",
-                ]
                 return {
-                    'response': random.choice(skip_responses),
+                    'response': f"No problem! You can ask me about {name}'s research interests, skills, projects, or experience.",
                     'action': 'normal',
                     'options': {}
                 }

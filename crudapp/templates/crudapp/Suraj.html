@@ -1686,6 +1686,7 @@
             </button>
             <div class="nav-links">
                 <a href="#about">About</a>
+                <a href="#research">Research</a>
                 <a href="#skills">Skills</a>
                 <a href="#projects">Projects</a>
                 <a href="#blog">Blog</a>
@@ -1698,11 +1699,8 @@
         <section class="hero" id="about">
             <div class="hero-content">
                 <h1>Suraj Kharal</h1>
-                <p class="subtitle">Junior Machine Learning Engineer & Data Analyst</p>
-                <p>I am a motivated data professional with a good foundation in machine learning, statistics, and python
-                    programming. I have a good working experience on time series datasets and building end to end data
-                    pipelines for automating the flow of data and building the predictive models. Previously I worked on financial
-                    and social domains to solve the real-world problems and data backed solution.</p>
+                <p class="subtitle">Artificial Intelligence Engineer</p>
+                <p>I am an AI/ML engineer with hands-on experience building autonomous agentic systems, RAG pipelines, and end-to-end data solutions across finance, healthcare, and e-commerce domains. My work spans LLM-powered tools, document intelligence, and multimodal AI — grounded in real production environments. I am actively seeking research opportunities where I can contribute to and grow within rigorous academic settings, particularly at the intersection of agentic AI, knowledge retrieval, and AI robustness in emerging market contexts.</p>
                 <div class="social-links">
                     <a href="https://github.com/Surazz2022" class="social-link" target="_blank">
                         <i class="fab fa-github"></i> GitHub
@@ -1710,10 +1708,7 @@
                     <a href="https://www.linkedin.com/in/suraj-kharal-baa9271b1/" class="social-link" target="_blank">
                         <i class="fab fa-linkedin"></i> LinkedIn
                     </a>
-                    <a href="https://discord.com/channels/@me" class="social-link" target="_blank" title="Join my Discord server">
-                        <i class="fab fa-discord"></i> Discord
-                    </a>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=surz.khl49@gmail.com&su=Portfolio%20Inquiry&body=Hi%20Suraj,%0A%0AI%20came%20across%20your%20portfolio%20and%20would%20like%20to%20connect.%0A%0ABest%20regards," class="social-link" target="_blank" title="Open Gmail to send email">
+<a href="https://mail.google.com/mail/?view=cm&fs=1&to=surz.khl49@gmail.com&su=Portfolio%20Inquiry&body=Hi%20Suraj,%0A%0AI%20came%20across%20your%20portfolio%20and%20would%20like%20to%20connect.%0A%0ABest%20regards," class="social-link" target="_blank" title="Open Gmail to send email">
                         <i class="fas fa-envelope"></i> Email
                     </a>
                     <a href="tel:+9779869407702" class="social-link phone-link" title="Click to call +977 9869407702">
@@ -1724,12 +1719,30 @@
             <img src="https://res.cloudinary.com/dhyygflt3/image/upload/v1747292367/dv_hsvbm3.jpg" alt="Suraj Kharal" class="profile-image">
         </section>
 
+        <section class="section" id="research">
+            <h2>Research Interests</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <h3>Robustness &amp; Failure Behavior of AI Models in Broker-Driven Emerging Markets</h3>
+                    <p>Investigating how AI and ML models behave under the structural constraints of broker-driven emerging markets, with a case study on the Nepal Stock Exchange (NEPSE). Research focuses on identifying where predictive models fail, why they fail, and what market-specific factors — such as broker concentration, thin liquidity, and non-standard price discovery — cause that failure. The goal is to develop more robust, market-aware AI frameworks suited to emerging financial ecosystems.</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Grounded Reasoning in Agentic Systems: Tool-Use, Memory, and Retrieval-Augmented Decision-Making</h3>
+                    <p>This research investigates how autonomous LLM-based agents can maintain factual consistency and task coherence across multi-step reasoning chains — particularly when operating over heterogeneous, domain-specific knowledge sources. Core questions include: how retrieval strategies interact with agent planning under latency and context-window constraints; whether dense retrieval (e.g., FAISS-based semantic search) or sparse retrieval generalizes better in low-resource domain corpora; and how function-calling architectures can be evaluated for reliability when the tool selection policy is learned rather than hardcoded. The long-term goal is to establish grounding mechanisms that make agentic outputs verifiable and traceable — a prerequisite for deployment in high-stakes domains such as clinical decision support and financial compliance.</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Domain Adaptation and Generalization of Vision-Language Models Beyond Benchmark Distributions</h3>
+                    <p>State-of-the-art vision-language models (VLMs) achieve strong performance on curated benchmarks yet exhibit significant degradation when deployed on domain-shifted, real-world imagery — particularly in low-resource industrial settings where labeled data is scarce and visual semantics deviate substantially from web-crawled pretraining corpora. This research examines the mechanisms underlying this distribution gap, with focus on: prompt-based and adapter-based fine-tuning strategies for VLMs in zero- and few-shot regimes; cross-modal alignment under label scarcity; and the design of evaluation protocols that expose generalization failure modes not captured by standard benchmarks. Empirical motivation comes from applied work in batch-scale product and brand classification across wholesale commerce imagery, where off-the-shelf VLMs consistently fail on domain-specific visual patterns.</p>
+                </div>
+            </div>
+        </section>
+
         <section class="section" id="skills">
             <h2>Technical Skills</h2>
             <div class="skills-grid">
                 <div class="skill-card">
                     <h3>Data Analysis</h3>
-                    <p>Pandas, Seaborn, Matplotlib, Plotly, NumPy</p>
+                    <p>Pandas, Seaborn, Matplotlib, Plotly, NumPy, Pydantic</p>
                 </div>
                 <div class="skill-card">
                     <h3>Deep Learning</h3>
@@ -1737,27 +1750,35 @@
                 </div>
                 <div class="skill-card">
                     <h3>Web Development</h3>
-                    <p>Django, Flask, FastAPI</p>
+                    <p>Django, Flask, FastAPI, REST API Design</p>
                 </div>
                 <div class="skill-card">
                     <h3>Machine Learning</h3>
                     <p>Scikit-learn, ARIMA, LSTM</p>
                 </div>
                 <div class="skill-card">
+                    <h3>AI / Agents</h3>
+                    <p>RAG, FAISS, Semantic Search, Sentence Transformers, Langchain, Langsmith, Langgraph, LLM Integration (Groq / Llama / Ollama), OpenAI API (gpt-o4)</p>
+                </div>
+                <div class="skill-card">
+                    <h3>NLP</h3>
+                    <p>Hugging Face Transformers, Text Embeddings, NLP Pipeline, OCR (Tesseract)</p>
+                </div>
+                <div class="skill-card">
                     <h3>DevOps</h3>
-                    <p>Docker, Git, GitHub</p>
+                    <p>Docker, Git, GitHub, Docker Compose, Docker Hub</p>
                 </div>
                 <div class="skill-card">
                     <h3>Database</h3>
-                    <p>PostgreSQL, MySQL, Microsoft SQL Server</p>
+                    <p>PostgreSQL, MySQL, Microsoft SQL Server, Qdrant Vector Database, Azure Blob Storage</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Data Engineering</h3>
+                    <p>ETL Pipelines, Data Cleaning, Data Integration, SQL, OCR Pipelines</p>
                 </div>
                 <div class="skill-card">
                     <h3>Soft Skills</h3>
                     <p>Communication, Problem Solving, Collaboration, Analytical, Creativity, Adaptability, Team Work</p>
-                </div>
-                <div class="skill-card">
-                    <h3>Data Engineering</h3>
-                    <p>ETL Pipelines, Data Cleaning, Data Integration,SQL</p>
                 </div>
             </div>
         </section>
@@ -1766,13 +1787,24 @@
             <h2>Experience</h2>
             <div class="skills-grid">
                 <div class="skill-card">
+                    <h3>AI Developer @ NepaWorks</h3>
+                    <p>Jan 2026 - Present</p>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        <li>• Built an inventory agent that lets users ask stock-related questions in plain English using LangChain and LangGraph for conversation flow and autonomous tool routing</li>
+                        <li>• Set up an autonomous background monitor using APScheduler to continuously check inventory levels, flag low-stock products, and track past alerts</li>
+                        <li>• Created tool functions (stock check, low-stock alert, inventory report) selected by the LLM via function calling — no hardcoded if-else routing logic</li>
+                        <li>• Built an end-to-end document digitization pipeline converting scanned PDFs to structured data using Tesseract OCR and Groq LLaMA 3.3, with multi-format export (JSON, Excel, CSV)</li>
+                        <li>• Built a production batch image classification and object detection pipeline using multimodal vision AI (Ollama qwen3-vl:8b) to detect products, brands, and wholesale indicators at scale</li>
+                    </ul>
+                </div>
+                <div class="skill-card">
                     <h3>Junior Machine Learning Engineer @ CognifyNow</h3>
-                    <p>Apr 2025 - Sept 2025</p>
+                    <p>Apr 2025 - Dec 2025</p>
                     <ul style="list-style-type: none; padding-left: 0;">
                         <li>• Extracted and processed large-scale Nepal stock market data (1000+ rows batches)</li>
                         <li>• Built end-to-end data pipeline: cleaning, analysis, preprocessing, and database integration</li>
                         <li>• Conducted comprehensive EDA on historical(adjusted) Nepal stock market data for <a href="https://nepalytix.com/" target="_blank" style="color: var(--primary); text-decoration: none;">Nepalytix trading platform</a></li>
-                        <li>• Trained LSTM and ARIMA models for stock price prediction but accuracy was not good</li>
+                        <li>• Trained refined stock data on LSTM and ARIMA models for stock price prediction</li>
                         <li>• Collaborated with cross-functional teams to deliver data-driven trading solutions</li>
                     </ul>
                 </div>
@@ -1781,18 +1813,36 @@
                     <p>Nov 2024 - Apr 2025</p>
                     <ul style="list-style-type: none; padding-left: 0;">
                         <li>• Analyzed chart patterns to predict risk and return of stocks</li>
-                        <li>• Verified data quality for fundamental analysis</li>
+                        <li>• Verified data quality for fundamental analysis (broker holdings, balance sheets, key ratios)</li>
                         <li>• Automated data scraping and chart adjustments using Python for <a href="https://nepsetrading.com/" target="_blank" style="color: var(--primary); text-decoration: none;">NepseTrading platform</a></li>
                     </ul>
                 </div>
+            </div>
+        </section>
+
+        <section class="section" id="projects">
+            <h2>Projects</h2>
+            <div class="skills-grid">
                 <div class="skill-card">
-                    <h3>Self-Learner on Machine Learning with Python</h3>
-                    <p>Jan 2024 - Present</p>
+                    <h3>PubMed RAG Chatbot</h3>
+                    <p>RAG · FastAPI · FAISS · Groq · Docker</p>
                     <ul style="list-style-type: none; padding-left: 0;">
-                        <li>• Developed Sentiment Analysis App</li>
-                        <li>• Conducted EDA on Instagram Data</li>
-                        <li>• Implemented ML algorithms and NLP techniques</li>
-                        <li>• Deployed models locally using Flask and FastAPI</li>
+                        <li>• Designed and built an end-to-end RAG pipeline parsing 30,000+ PubMed biomedical papers, generating sentence embeddings stored in a FAISS vector index for real-time semantic search</li>
+                        <li>• Integrated Llama 3.3 70B via Groq API for research answers grounded in retrieved paper excerpts, with automatic PMID citation for traceability</li>
+                        <li>• Built a RESTful API with FastAPI exposing four endpoints — semantic search, analytics aggregation, RAG chat, and health monitoring — with Pydantic validation and singleton dependency injection</li>
+                        <li>• Developed a word-level overlap text chunking strategy producing 31,520 searchable chunks from raw XML data</li>
+                        <li>• Containerized with Docker, baking the pre-built FAISS index into the image for single-command deployment</li>
+                    </ul>
+                </div>
+                <div class="skill-card">
+                    <h3>Sentiment Analysis App</h3>
+                    <p>NLP · Flask · FastAPI · Scikit-learn · Deep Learning</p>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        <li>• Conducted thorough EDA on Instagram data retrieved from Kaggle to understand dataset characteristics and nuances</li>
+                        <li>• Preprocessed dataset with text cleaning, tokenization, and feature extraction to ensure data quality</li>
+                        <li>• Designed and implemented ML algorithms for sentiment analysis using NLP and deep learning techniques</li>
+                        <li>• Tuned model hyperparameters and evaluated performance with accuracy, precision, recall, and F1-score metrics</li>
+                        <li>• Deployed the model with Flask and FastAPI locally</li>
                     </ul>
                 </div>
             </div>

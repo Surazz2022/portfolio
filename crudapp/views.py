@@ -8,6 +8,7 @@ import json
 from .models import Item, PersonalInfo, JobOffer, ChatbotTrainingData
 from .forms import ItemForm, JobOfferForm
 from .ml_chatbot import get_chatbot_service
+from .groq_classifier import get_groq_classifier
 from .conversation_manager import ConversationManager
 from .response_generator import ResponseGenerator
 
@@ -15,17 +16,17 @@ from .response_generator import ResponseGenerator
 class DefaultPersonalInfo:
     """Fallback personal info when database is empty (e.g., on Vercel)"""
     full_name = 'Suraj Kharal'
-    title = 'Junior Machine Learning Engineer & Data Analyst'
+    title = 'AI Developer & ML Engineer'
     email = 'surz.khl49@gmail.com'
     phone = '+977-9869407702'
     location = 'Devdaha 07, Rupandehi, Nepal'
     linkedin_url = 'https://www.linkedin.com/in/suraj-kharal-baa9271b1/'
     github_url = 'https://github.com/Surazz2022'
-    bio = 'I am a motivated data professional with a good foundation in machine learning, statistics, and python programming.'
-    skills_summary = 'Python, Machine Learning, Data Analysis, LSTM, ARIMA, Time Series Analysis, Data Pipelines'
-    experience_summary = 'Junior ML Engineer at CognifyNow, Junior Data Analyst at NepseTrading'
+    bio = 'I am an AI/ML engineer actively building autonomous agentic AI systems and end-to-end data solutions. Focused on LLM-powered tools, RAG-based search, document processing, and NLP solutions across finance, healthcare, e-commerce, and social research domains.'
+    skills_summary = 'Python, LangChain, LangGraph, RAG, FAISS, Sentence Transformers, Groq, Llama, Ollama, FastAPI, Django, Docker, PostgreSQL, Qdrant, OCR, Machine Learning, Data Analysis'
+    experience_summary = 'AI Developer at NepaWorks, Junior ML Engineer at CognifyNow, Junior Data Analyst at NepseTrading'
     availability = 'Available for opportunities'
-    preferred_roles = 'Machine Learning Engineer, Data Scientist, Data Analyst'
+    preferred_roles = 'AI Engineer, ML Engineer, Data Scientist, Backend Developer'
     salary_expectation = None
     work_preference = 'any'
 
@@ -164,67 +165,74 @@ def chatbot_interact(request):
                 # User asked a normal question, skip greeting flow
                 ConversationManager.update_state(conversation, 'normal')
         
-        # Normal conversation flow with ML model
+        # Normal conversation flow
         ConversationManager.add_message_to_history(conversation, user_message, 'user')
-        
-        # Get singleton ML chatbot service
-        ml_chatbot = get_chatbot_service()
-        
-        # Get conversation history for context
+
+        # History for context (exclude the message just added)
         history = conversation.conversation_history[:-1] if len(conversation.conversation_history) > 1 else []
-        
-        # Predict intent with context
-        prediction = ml_chatbot.predict_with_context(
-            user_message,
-            conversation_state=conversation.conversation_state,
-            conversation_history=history
-        )
-        
-        predicted_intent = prediction['intent']
-        
-        # Get training data for similar message matching (handle missing DB)
-        try:
-            training_data = ChatbotTrainingData.objects.all()
-            training_tuples = [(item.user_message, item.intent, item.response) for item in training_data]
-        except Exception:
-            training_tuples = []
-        
-        # Try to find a matching response from training data
+
+        predicted_intent = None
+        confidence = 1.0
+
+        # ── Step 1: Try Groq (LLM-based, context-aware) ──────────────────────
+        groq = get_groq_classifier()
+        predicted_intent = groq.classify(user_message, conversation_history=history)
+
+        # ── Step 2: ML fallback if Groq unavailable or errored ───────────────
+        if predicted_intent is None:
+            ml_chatbot = get_chatbot_service()
+            prediction = ml_chatbot.predict_with_context(
+                user_message,
+                conversation_state=conversation.conversation_state,
+                conversation_history=history
+            )
+            predicted_intent = prediction['intent']
+            confidence = prediction.get('confidence', 0.0)
+
+            # Follow-up resolution for ML fallback (Groq handles this natively)
+            if predicted_intent == 'default':
+                last_intent = conversation.context.get('last_intent')
+                if last_intent:
+                    msg_lower = user_message.lower().strip()
+                    follow_up_signals = [
+                        'more', 'tell me more', 'elaborate', 'expand', 'continue',
+                        'what about', 'that', 'it', 'first', 'second', 'third',
+                        'explain', 'detail', 'further', 'again'
+                    ]
+                    if len(user_message.split()) <= 5 or any(s in msg_lower for s in follow_up_signals):
+                        predicted_intent = last_intent
+
+        # Store last intent for ML fallback follow-up resolution
+        known_intents = {'about', 'skills', 'experience', 'contact', 'availability',
+                         'research', 'projects', 'education'}
+        if predicted_intent in known_intents:
+            conversation.context['last_intent'] = predicted_intent
+            conversation.save()
+
         response = None
         action = None
-        
-        # First, try to find exact or similar matches in training data
-        if training_tuples:
-            similar_messages = ml_chatbot.get_similar_messages(user_message, training_tuples, top_n=1)
-            if similar_messages and similar_messages[0]['similarity'] > 0.5:
-                # Use the response from similar training data
-                response = similar_messages[0]['response']
-                predicted_intent = similar_messages[0]['intent']
-        
-        # If no good match found, use enhanced response generator
-        if not response:
-            # Use enhanced response generator for varied, context-aware responses
-            response = ResponseGenerator.generate_response(
-                predicted_intent, 
-                personal_info, 
-                user_message,
-                context={'conversation_history': history}
-            )
-        
+
+        # Use response generator — strictly portfolio-grounded
+        response = ResponseGenerator.generate_response(
+            predicted_intent,
+            personal_info,
+            user_message,
+            context={'conversation_history': history}
+        )
+
         # Handle job offer flow
-        if predicted_intent == 'job_offer' or any(word in user_message.lower() for word in ['job offer', 'offer', 'position', 'role', 'opportunity', 'hire', 'recruit']):
+        if predicted_intent == 'job_offer':
             action = "offer_flow"
             ConversationManager.update_state(conversation, 'job_offer_flow')
-        
-        # Add bot response to history
+
         ConversationManager.add_message_to_history(conversation, response, 'bot')
-        
+
         return JsonResponse({
             'response': response,
             'action': action,
             'session_id': conversation.session_id,
             'intent': predicted_intent,
-            'confidence': prediction.get('confidence', 0.0)
+            'confidence': confidence
         })
     
     except Exception as e:

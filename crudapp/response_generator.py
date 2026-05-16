@@ -2,12 +2,26 @@
 Enhanced Response Generator
 Generates varied, context-aware responses based on database info and web search
 """
-import random
 from .models import PersonalInfo
 
 
+def _pick(responses, user_message):
+    """Deterministic selection — same question always returns the same variant."""
+    return responses[hash(user_message.lower().strip()) % len(responses)]
+
+
+def _not_in_portfolio(name, topic, user_message):
+    """Standard honest response when a specific fact is not in the portfolio."""
+    responses = [
+        f"That specific information — {topic} — is not mentioned in {name}'s portfolio. I can only answer based on what is explicitly documented here. You may want to reach out to him directly for this.",
+        f"I'm not certain about {topic}. It is not explicitly mentioned in {name}'s portfolio, and I'd rather be honest than guess. Feel free to contact him directly for accurate details.",
+        f"I don't have information about {topic} in {name}'s portfolio. I only answer based on what is documented — I won't speculate on things not explicitly mentioned.",
+    ]
+    return _pick(responses, user_message)
+
+
 class ResponseGenerator:
-    """Generates varied and context-aware responses"""
+    """Generates strictly portfolio-grounded responses."""
     
     @staticmethod
     def get_personal_info():
@@ -46,53 +60,68 @@ class ResponseGenerator:
         # If asking specifically about the person (with name or pronouns)
         if any(word in message_lower for word in ['who is', 'tell me about', 'about', 'who are you', 'introduce']):
             if any(keyword in message_lower for keyword in ['suraj', 'kharal', 'him', 'his', 'he']):
-                return random.choice(responses)
+                return _pick(responses, user_message)
         
-        return random.choice(responses)
+        return _pick(responses, user_message)
     
     @staticmethod
     def generate_skills_response(personal_info, user_message, context=None):
-        """Generate varied skills responses"""
-        if not personal_info:
-            return "Skills information is not available. Would you like to know about experience or contact information?"
-        
-        name = personal_info.full_name
-        skills = personal_info.skills_summary
-        skills_list = [s.strip() for s in skills.split(',')] if skills else []
-        
-        responses = [
-            f"{name} has expertise in: {skills}",
-            f"Here are {name}'s key skills: {skills}",
-            f"{name} is proficient in {skills}",
-            f"Technical skills include: {skills}",
-        ]
-        
-        # If specific skill mentioned, provide more detail
-        message_lower = user_message.lower()
-        for skill in skills_list:
-            if skill.lower() in message_lower:
-                return f"Yes! {name} has experience with {skill}. In fact, {name}'s skills include: {skills}"
-        
-        return random.choice(responses)
+        """Generate categorized skills response."""
+        name = personal_info.full_name if personal_info else "Suraj Kharal"
+        msg = user_message.lower()
+
+        SKILL_CATEGORIES = {
+            "AI / Agents":       ["langchain", "langgraph", "rag", "faiss", "semantic search",
+                                   "sentence transformers", "groq", "llama", "ollama", "openai", "langsmith"],
+            "NLP":               ["hugging face", "transformers", "text embeddings", "nlp", "ocr", "tesseract"],
+            "Deep Learning":     ["tensorflow", "keras", "pytorch"],
+            "ML":                ["scikit-learn", "arima", "lstm"],
+            "Web / API":         ["fastapi", "django", "flask", "rest api"],
+            "Data Analysis":     ["pandas", "numpy", "matplotlib", "seaborn", "plotly", "pydantic"],
+            "Database":          ["postgresql", "mysql", "sql server", "qdrant", "azure blob"],
+            "DevOps":            ["docker", "git", "github", "docker compose"],
+            "Data Engineering":  ["etl", "data cleaning", "data integration", "sql", "ocr pipeline"],
+        }
+
+        # If asking about a specific skill, confirm and show its category
+        for category, skills in SKILL_CATEGORIES.items():
+            for skill in skills:
+                if skill in msg:
+                    return (
+                        f"Yes, {name} has hands-on experience with {skill.title()}. "
+                        f"It falls under his {category} skill set, alongside: "
+                        f"{', '.join(s.title() for s in skills if s != skill)}."
+                    )
+
+        # General skills overview — formatted by category
+        lines = [f"Here is a breakdown of {name}'s technical skills:\n"]
+        for category, skills in SKILL_CATEGORIES.items():
+            lines.append(f"• {category}: {', '.join(s.title() for s in skills)}")
+        return "\n".join(lines)
     
     @staticmethod
     def generate_experience_response(personal_info, user_message, context=None):
         """Generate varied experience responses"""
         if not personal_info:
             return "Experience information is not available. Would you like to know about skills or contact information?"
-        
+
         name = personal_info.full_name
         experience = personal_info.experience_summary
         title = personal_info.title
-        
+        msg = user_message.lower()
+
+        salary_keywords = ['salary', 'compensation', 'pay', 'ctc', 'package', 'wage', 'stipend']
+        if any(kw in msg for kw in salary_keywords):
+            return _not_in_portfolio(name, "salary or compensation details", user_message)
+
         responses = [
             f"{name}'s experience: {experience}",
             f"Here's {name}'s professional background: {experience}",
             f"{name}, a {title}, has the following experience: {experience}",
             f"Professional experience: {experience}",
         ]
-        
-        return random.choice(responses)
+
+        return _pick(responses, user_message)
     
     @staticmethod
     def generate_contact_response(personal_info, user_message, context=None):
@@ -115,14 +144,14 @@ class ResponseGenerator:
         
         # Add LinkedIn/GitHub if available
         if linkedin or github:
-            response = random.choice(responses)
+            response = _pick(responses, user_message)
             if linkedin:
                 response += f"\n🔗 LinkedIn: {linkedin}"
             if github:
                 response += f"\n💻 GitHub: {github}"
             return response
         
-        return random.choice(responses)
+        return _pick(responses, user_message)
     
     @staticmethod
     def generate_availability_response(personal_info, user_message, context=None):
@@ -140,7 +169,7 @@ class ResponseGenerator:
             f"{name} is {availability.lower()}. Looking for opportunities as: {preferred_roles}",
         ]
         
-        return random.choice(responses)
+        return _pick(responses, user_message)
     
     @staticmethod
     def generate_greeting_response(personal_info, user_message, context=None):
@@ -156,23 +185,137 @@ class ResponseGenerator:
             f"Welcome! I'm an AI assistant for {name}. Feel free to ask about skills, experience, or submit a job offer!",
         ]
         
-        return random.choice(responses)
+        return _pick(responses, user_message)
     
     @staticmethod
-    def generate_default_response(personal_info, user_message, context=None):
-        """Generate varied default responses"""
+    def generate_research_response(personal_info, user_message, context=None):
+        """Generate response about research interests"""
+        name = personal_info.full_name if personal_info else "Suraj Kharal"
+        msg = user_message.lower()
+
+        # Specific facts not in the portfolio — answer honestly
+        publication_keywords = [
+            'publish', 'published', 'paper', 'papers', 'journal', 'conference',
+            'arxiv', 'citation', 'cited', 'preprint', 'manuscript', 'article',
+            'ieee', 'acm', 'springer', 'publication', 'peer review', 'peer-review'
+        ]
+        if any(kw in msg for kw in publication_keywords):
+            return (
+                f"No published academic papers are listed in {name}'s portfolio. "
+                f"He is currently in the early stages of his research journey — actively collecting data "
+                f"for his study on AI model robustness in the NEPSE market — but no publications have been mentioned yet. "
+                f"For the most up-to-date status, you may want to contact him directly."
+            )
+
+        conference_keywords = ['conference', 'workshop', 'symposium', 'seminar', 'talk', 'presentation', 'poster']
+        if any(kw in msg for kw in conference_keywords):
+            return _not_in_portfolio(name, "conference or workshop participation", user_message)
+
+        grant_keywords = ['grant', 'funding', 'funded', 'scholarship', 'fellowship', 'award']
+        if any(kw in msg for kw in grant_keywords):
+            return _not_in_portfolio(name, "grants or research funding", user_message)
+
+        responses = [
+            f"{name} has three core research interests:\n\n"
+            f"1. Robustness & Failure Behavior of AI Models in Broker-Driven Emerging Markets — investigating where and why predictive models fail in markets like NEPSE, where broker concentration, thin liquidity, and non-standard price discovery are structural constraints.\n\n"
+            f"2. Agentic AI Systems & Retrieval-Augmented Generation — designing autonomous agents that ground their reasoning in dynamically retrieved domain-specific knowledge, with focus on multi-agent coordination, tool-use planning, and reducing hallucination through citation-grounded generation.\n\n"
+            f"3. Multimodal AI for Domain-Specific Applications — adapting vision-language models across specialized domains such as wholesale commerce and document intelligence, focusing on domain adaptation and cross-modal alignment.",
+
+            f"{name} is actively seeking research opportunities. His interests span:\n\n"
+            f"• AI robustness in emerging financial markets (NEPSE case study — data collection ongoing)\n"
+            f"• Agentic AI & RAG systems for knowledge-grounded reasoning\n"
+            f"• Multimodal AI applied to real-world industry settings beyond benchmark datasets\n\n"
+            f"He is particularly interested in collaborating with researchers working at the intersection of LLMs, autonomous systems, and domain-specific AI applications.",
+
+            f"Research is a core focus for {name}. He is investigating the robustness and failure behavior of AI models in broker-driven emerging markets, with a case study on NEPSE. He is also interested in agentic AI systems that combine autonomous decision-making with RAG-based knowledge retrieval, and in how multimodal vision-language models generalize to specialized industry domains. He is open to research collaborations and fully funded academic opportunities.",
+        ]
+
+        return _pick(responses, user_message)
+
+    @staticmethod
+    def generate_projects_response(personal_info, user_message, context=None):
+        """Generate response about projects"""
         if not personal_info:
             name = "Suraj Kharal"
         else:
             name = personal_info.full_name
-        
+
         responses = [
-            f"I'm here to help! You can ask me about:\n• {name}'s skills and expertise\n• Work experience\n• Contact information\n• Availability for opportunities\n• Submitting a job offer\n\nWhat would you like to know?",
-            f"Let me help you! I can provide information about:\n• Skills and technologies\n• Professional experience\n• How to get in touch\n• Job availability\n• Submitting offers\n\nWhat interests you?",
-            f"Sure! I can help with:\n• Technical skills\n• Career background\n• Contact details\n• Job opportunities\n• Offer submissions\n\nWhat would you like to explore?",
+            f"{name} has built two key projects:\n\n"
+            f"1. PubMed RAG Chatbot — An end-to-end RAG pipeline that parses 30,000+ biomedical papers, stores embeddings in FAISS, and uses Llama 3.3 70B via Groq for citation-grounded research answers. Exposed via FastAPI with 4 endpoints and containerized with Docker.\n\n"
+            f"2. Sentiment Analysis App — Built on Instagram data from Kaggle, this project covers full EDA, text preprocessing, NLP and deep learning model training with hyperparameter tuning, evaluated on accuracy, precision, recall, and F1-score, and deployed with Flask and FastAPI.",
+
+            f"Here are {name}'s notable projects:\n\n"
+            f"• PubMed RAG Chatbot: RAG pipeline over 30k+ PubMed papers → FAISS vector index → Llama 3.3 70B (Groq) → FastAPI → Docker. Produces 31,520 searchable chunks with PMID citation traceability.\n\n"
+            f"• Sentiment Analysis App: End-to-end NLP pipeline on Instagram data — EDA, tokenization, ML + deep learning models, hyperparameter tuning, Flask/FastAPI deployment.",
+
+            f"{name}'s project work reflects his focus on production-ready AI systems. The PubMed RAG Chatbot demonstrates his ability to build scalable retrieval pipelines and integrate LLMs with real domain knowledge. The Sentiment Analysis App shows his foundation in classical NLP and deep learning workflows. Both projects are available on his GitHub.",
         ]
-        
-        return random.choice(responses)
+
+        return _pick(responses, user_message)
+
+    @staticmethod
+    def generate_education_response(personal_info, user_message, context=None):
+        """Generate response about education, GPA, and certifications."""
+        name = personal_info.full_name if personal_info else "Suraj Kharal"
+        msg = user_message.lower()
+
+        if any(kw in msg for kw in ['gpa', 'cgpa', 'grade', 'marks', 'percentage', 'score', 'result']):
+            return (
+                f"{name} completed his Bachelor of Information Management (BIM) from "
+                f"Tribhuvan University, Oxford College, Butwal (2019–2023) with a GPA of 3.55."
+            )
+
+        if any(kw in msg for kw in ['certif', 'course', 'jovian', 'crewai', 'google developer']):
+            return (
+                f"{name} has completed the following courses:\n"
+                f"• Crash Course — Jovian.ai\n"
+                f"• Crash Course — Google Developers Group\n"
+                f"• Crash Course — CrewAI"
+            )
+
+        return (
+            f"{name}'s educational background:\n\n"
+            f"🎓 Bachelor of Information Management (BIM)\n"
+            f"   Tribhuvan University, Oxford College, Butwal\n"
+            f"   2019 – 2023 | GPA: 3.55\n\n"
+            f"📜 Certifications:\n"
+            f"   • Crash Course — Jovian.ai\n"
+            f"   • Crash Course — Google Developers Group\n"
+            f"   • Crash Course — CrewAI\n\n"
+            f"🏆 Extracurricular:\n"
+            f"   • Secretary, IT Club — Oxford College\n"
+            f"   • Participant — LECATHON 2022"
+        )
+
+    @staticmethod
+    def generate_default_response(personal_info, user_message, context=None):
+        """Return a scoped honest response when nothing matches."""
+        name = personal_info.full_name if personal_info else "Suraj Kharal"
+        msg = user_message.lower()
+
+        # Catch common out-of-scope specific questions and be explicit
+        age_keywords = ['age', 'how old', 'date of birth', 'dob', 'born']
+        if any(kw in msg for kw in age_keywords):
+            return _not_in_portfolio(name, "age or date of birth", user_message)
+
+        gpa_keywords = ['gpa', 'grade', 'marks', 'percentage', 'score', 'cgpa']
+        if any(kw in msg for kw in gpa_keywords):
+            return (
+                f"{name} completed a Bachelor of Information Management (BIM) from Tribhuvan University "
+                f"(Oxford College, Butwal) with a GPA of 3.55. That is the only academic score mentioned in the portfolio."
+            )
+
+        language_keywords = ['language', 'speak', 'nepali', 'english', 'native language', 'mother tongue']
+        if any(kw in msg for kw in language_keywords):
+            return _not_in_portfolio(name, "spoken languages or language proficiency", user_message)
+
+        return (
+            f"I'm not sure I have information about that in {name}'s portfolio. "
+            f"I can only answer based on what is explicitly documented here — I won't guess or speculate. "
+            f"You can ask about his research interests, skills, projects, work experience, or contact details. "
+            f"Or reach out to him directly for anything else."
+        )
     
     @staticmethod
     def generate_response(intent, personal_info, user_message, context=None):
@@ -184,6 +327,9 @@ class ResponseGenerator:
             'contact': ResponseGenerator.generate_contact_response,
             'availability': ResponseGenerator.generate_availability_response,
             'greeting': ResponseGenerator.generate_greeting_response,
+            'research': ResponseGenerator.generate_research_response,
+            'projects': ResponseGenerator.generate_projects_response,
+            'education': ResponseGenerator.generate_education_response,
             'default': ResponseGenerator.generate_default_response,
         }
         
