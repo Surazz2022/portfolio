@@ -201,9 +201,9 @@ class ResponseGenerator:
         ]
         if any(kw in msg for kw in publication_keywords):
             return (
-                f"{name} has one preprint: \"Machine Learning Failures in Broker-Driven Emerging Markets: "
-                f"Concept Drift, Regime Switching, and Structural Breaks — Evidence from NEPSE Transaction-Level Data\" "
-                f"(Zenodo, 2026). DOI: 10.5281/zenodo.20476820. It is a preprint, not a peer-reviewed journal paper."
+                f"{name} has one preprint on Zenodo (2026) investigating AI model robustness and failure behavior "
+                f"in domain-specific, data-constrained real-world environments. "
+                f"DOI: 10.5281/zenodo.20476820. It is a preprint, not a peer-reviewed journal paper."
             )
 
         conference_keywords = ['conference', 'workshop', 'symposium', 'seminar', 'talk', 'presentation', 'poster']
@@ -216,17 +216,18 @@ class ResponseGenerator:
 
         responses = [
             f"{name}'s research interests:\n\n"
-            f"1. ML Failures in Emerging Financial Markets — looking at why models break down in markets like NEPSE, where broker-driven dynamics and thin liquidity create conditions standard models aren't built for. He has a preprint on this (Zenodo, 2026, DOI: 10.5281/zenodo.20476820).\n\n"
-            f"2. Large Language Models, Multi-Agent AI & NLP — interested in how LLMs behave in agentic setups around tool use and retrieval, and in NLP problems like toxicity detection and chatbot systems.\n\n"
-            f"3. Multimodal Vision AI & Sentiment Analysis — applying vision-language models to domain-specific settings with limited labeled data, and sentiment analysis in online discourse.",
+            f"• Large Language Models (LLMs)\n"
+            f"• Multi-Agent AI & Chatbot Systems\n"
+            f"• Natural Language Processing\n"
+            f"• Toxicity Detection & Sentiment Analysis in Online Discourse\n"
+            f"• Multimodal Vision AI & Image Classification\n\n"
+            f"He also has a preprint on AI model robustness in domain-specific settings (Zenodo, 2026 — DOI: 10.5281/zenodo.20476820).",
 
-            f"{name} has three research interests:\n\n"
-            f"• ML failures in emerging financial markets — with a preprint on NEPSE (concept drift, regime switching, structural breaks)\n"
-            f"• LLMs, multi-agent AI & NLP — including RAG systems, chatbots, and toxicity detection\n"
-            f"• Multimodal vision AI & sentiment analysis in domain-specific settings\n\n"
-            f"He is looking for fully funded research opportunities in these areas.",
+            f"{name} is interested in: LLMs, Multi-Agent AI & Chatbot Systems, Natural Language Processing, Toxicity Detection & Sentiment Analysis, and Multimodal Vision AI & Image Classification. "
+            f"He is actively looking for fully funded research opportunities in these areas.",
 
-            f"{name} is interested in three areas: why ML models fail in broker-driven markets like NEPSE (he has a preprint on this), how LLMs and multi-agent systems behave in practice, and multimodal vision AI applied to settings with limited labeled data. He is actively looking for research collaborations and fully funded positions.",
+            f"{name}'s research spans LLMs, multi-agent AI systems, NLP, toxicity detection and sentiment analysis in online discourse, and multimodal vision AI. "
+            f"He also has a preprint on AI model robustness in domain-specific, data-constrained environments. He is open to research collaborations and fully funded positions.",
         ]
 
         return _pick(responses, user_message)

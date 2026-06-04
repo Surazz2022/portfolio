@@ -16,15 +16,15 @@ from .response_generator import ResponseGenerator
 class DefaultPersonalInfo:
     """Fallback personal info when database is empty (e.g., on Vercel)"""
     full_name = 'Suraj Kharal'
-    title = 'AI Developer & ML Engineer'
+    title = 'Artificial Intelligence Engineer'
     email = 'surz.khl49@gmail.com'
     phone = '+977-9869407702'
     location = 'Devdaha 07, Rupandehi, Nepal'
     linkedin_url = 'https://www.linkedin.com/in/suraj-kharal-baa9271b1/'
     github_url = 'https://github.com/Surazz2022'
-    bio = 'I am an AI/ML engineer actively building autonomous agentic AI systems and end-to-end data solutions. Focused on LLM-powered tools, RAG-based search, document processing, and NLP solutions across finance, healthcare, e-commerce, and social research domains.'
+    bio = 'I am an AI/ML engineer with hands-on experience building autonomous agentic systems, RAG pipelines, and end-to-end data solutions across finance, healthcare, and e-commerce domains. My work spans LLM-powered tools, document intelligence, and multimodal AI — grounded in real production environments. I am actively seeking research opportunities at the intersection of agentic AI, natural language processing, and AI robustness in domain-specific applications.'
     skills_summary = 'Python, LangChain, LangGraph, RAG, FAISS, Sentence Transformers, Groq, Llama, Ollama, FastAPI, Django, Docker, PostgreSQL, Qdrant, OCR, Machine Learning, Data Analysis'
-    experience_summary = 'AI Developer at NepaWorks, Junior ML Engineer at CognifyNow, Junior Data Analyst at NepseTrading'
+    experience_summary = 'Artificial Intelligence Engineer at NepaWorks, Junior Machine Learning Engineer at CognifyNow, Junior Data Analyst at NepseTrading'
     availability = 'Available for opportunities'
     preferred_roles = 'AI Engineer, ML Engineer, Data Scientist, Backend Developer'
     salary_expectation = None
