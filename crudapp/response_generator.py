@@ -201,10 +201,9 @@ class ResponseGenerator:
         ]
         if any(kw in msg for kw in publication_keywords):
             return (
-                f"No published academic papers are listed in {name}'s portfolio. "
-                f"He is currently in the early stages of his research journey — actively collecting data "
-                f"for his study on AI model robustness in the NEPSE market — but no publications have been mentioned yet. "
-                f"For the most up-to-date status, you may want to contact him directly."
+                f"{name} has one preprint: \"Machine Learning Failures in Broker-Driven Emerging Markets: "
+                f"Concept Drift, Regime Switching, and Structural Breaks — Evidence from NEPSE Transaction-Level Data\" "
+                f"(Zenodo, 2026). DOI: 10.5281/zenodo.20476820. It is a preprint, not a peer-reviewed journal paper."
             )
 
         conference_keywords = ['conference', 'workshop', 'symposium', 'seminar', 'talk', 'presentation', 'poster']
@@ -216,18 +215,18 @@ class ResponseGenerator:
             return _not_in_portfolio(name, "grants or research funding", user_message)
 
         responses = [
-            f"{name} has three core research interests:\n\n"
-            f"1. Robustness & Failure Behavior of AI Models in Broker-Driven Emerging Markets — investigating where and why predictive models fail in markets like NEPSE, where broker concentration, thin liquidity, and non-standard price discovery are structural constraints.\n\n"
-            f"2. Agentic AI Systems & Retrieval-Augmented Generation — designing autonomous agents that ground their reasoning in dynamically retrieved domain-specific knowledge, with focus on multi-agent coordination, tool-use planning, and reducing hallucination through citation-grounded generation.\n\n"
-            f"3. Multimodal AI for Domain-Specific Applications — adapting vision-language models across specialized domains such as wholesale commerce and document intelligence, focusing on domain adaptation and cross-modal alignment.",
+            f"{name}'s research interests:\n\n"
+            f"1. ML Failures in Emerging Financial Markets — looking at why models break down in markets like NEPSE, where broker-driven dynamics and thin liquidity create conditions standard models aren't built for. He has a preprint on this (Zenodo, 2026, DOI: 10.5281/zenodo.20476820).\n\n"
+            f"2. Large Language Models, Multi-Agent AI & NLP — interested in how LLMs behave in agentic setups around tool use and retrieval, and in NLP problems like toxicity detection and chatbot systems.\n\n"
+            f"3. Multimodal Vision AI & Sentiment Analysis — applying vision-language models to domain-specific settings with limited labeled data, and sentiment analysis in online discourse.",
 
-            f"{name} is actively seeking research opportunities. His interests span:\n\n"
-            f"• AI robustness in emerging financial markets (NEPSE case study — data collection ongoing)\n"
-            f"• Agentic AI & RAG systems for knowledge-grounded reasoning\n"
-            f"• Multimodal AI applied to real-world industry settings beyond benchmark datasets\n\n"
-            f"He is particularly interested in collaborating with researchers working at the intersection of LLMs, autonomous systems, and domain-specific AI applications.",
+            f"{name} has three research interests:\n\n"
+            f"• ML failures in emerging financial markets — with a preprint on NEPSE (concept drift, regime switching, structural breaks)\n"
+            f"• LLMs, multi-agent AI & NLP — including RAG systems, chatbots, and toxicity detection\n"
+            f"• Multimodal vision AI & sentiment analysis in domain-specific settings\n\n"
+            f"He is looking for fully funded research opportunities in these areas.",
 
-            f"Research is a core focus for {name}. He is investigating the robustness and failure behavior of AI models in broker-driven emerging markets, with a case study on NEPSE. He is also interested in agentic AI systems that combine autonomous decision-making with RAG-based knowledge retrieval, and in how multimodal vision-language models generalize to specialized industry domains. He is open to research collaborations and fully funded academic opportunities.",
+            f"{name} is interested in three areas: why ML models fail in broker-driven markets like NEPSE (he has a preprint on this), how LLMs and multi-agent systems behave in practice, and multimodal vision AI applied to settings with limited labeled data. He is actively looking for research collaborations and fully funded positions.",
         ]
 
         return _pick(responses, user_message)
